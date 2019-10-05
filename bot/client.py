@@ -3,7 +3,7 @@ import json
 import asyncio
 
 from bot.json import json_creator as Creator
-from bot.events import events
+from bot import events
 
 
 class Client:
