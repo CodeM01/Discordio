@@ -1,5 +1,4 @@
 async def load_guilds(user, input_guilds):
-
     for guild in input_guilds:
         if not user.guilds.get(guild["id"]):
             # Create Guild
