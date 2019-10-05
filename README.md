@@ -6,7 +6,7 @@ Below is an example of code which will print out the contents of a message when 
 
 ```python
 
-from RawDiscordBot import Client as Cli
+from bot.client import client as Cli
 
 Client = Cli.Client("bot_token_here")
 
