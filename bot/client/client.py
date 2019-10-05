@@ -63,11 +63,11 @@ class Client:
                     self.states["op_code_11"] = True
                 elif op == 0:
                     if loaded_dictionary["t"] == "READY":
-                        asyncio.get_event_loop().create_task( Events.ready( self, loaded_dictionary ) )
+                        asyncio.get_event_loop().create_task(Events.ready(self, loaded_dictionary))
                     elif loaded_dictionary["t"] == "MESSAGE_CREATE":
-                        asyncio.get_event_loop().create_task( Events.message_create( self, loaded_dictionary ) )
+                        asyncio.get_event_loop().create_task(Events.message_create( self, loaded_dictionary))
                     elif loaded_dictionary["t"] == "GUILD_CREATE":
-                        asyncio.get_event_loop().create_task( Events.guild_create( self, loaded_dictionary ) )
+                        asyncio.get_event_loop().create_task(Events.guild_create(self, loaded_dictionary))
 
     def async_handler(self, function, *args):
 
@@ -78,9 +78,9 @@ class Client:
             task = asyncio.get_event_loop().create_task(function())
             asyncio.get_event_loop().run_until_complete(task)
         elif function.__name__ == "heartbeat":
-            asyncio.get_event_loop().create_task( Events.heartbeat( self ) )
+            asyncio.get_event_loop().create_task(Events.heartbeat(self))
         elif function.__name__ == "GUILD_CREATE":
-            asyncio.get_event_loop().create_task( Events.guild_create( self, args ) )
+            asyncio.get_event_loop().create_task(Events.guild_create(self, args))
         elif function.__name__ == "READY":
             pass
 
