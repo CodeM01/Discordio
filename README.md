@@ -2,7 +2,7 @@
 
 A discord bot library, whether you’re making your own !wumpus commands or looking to Log In With Discord, we’ve got you covered.
 
-Below is an example of code which will print out the contents of a message when a message is sent...
+Below is an example of code which will print out the contents of a message when a message is sent...just a quick snapshot of our libray (it's work in progress)
 
 ```python
 
