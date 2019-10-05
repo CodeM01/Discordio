@@ -1,7 +1,7 @@
 import asyncio
-from RawDiscordBot.json import json_creator as Creator
-from RawDiscordBot.entities.channel.channel_class import Channel
-from RawDiscordBot.entities.guild import load_guild
+from bot.json import json_creator as Creator
+from bot.entities.channel.channel_class import Channel
+from bot.entities.guild import load_guild
 
 
 class message:
