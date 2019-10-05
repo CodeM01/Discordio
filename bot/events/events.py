@@ -1,7 +1,7 @@
 import asyncio
 from RawDiscordBot.json import json_creator as Creator
 from RawDiscordBot.entities.channel.channel_class import Channel
-from RawDiscordBot.entities.guild import loading_guild
+from RawDiscordBot.entities.guild import load_guild
 
 
 class message:
@@ -44,7 +44,7 @@ async def message_create(user, obj):
 async def ready(user, obj):
     # Load guilds
     guilds = obj["d"]["guilds"]
-    await loading_guild.load_guilds(user, guilds)
+    await load_guild.load_guilds(user, guilds)
 
     # Load User Data
     user.user = obj["d"]["user"]
@@ -53,5 +53,5 @@ async def ready(user, obj):
 async def guild_create(user, obj):
     guild = obj["d"]
 
-    await loading_guild.load_guilds(user, [guild])
-    await loading_guild.load_guild_data(user, guild)
+    await load_guild.load_guilds(user, [guild])
+    await load_guild.load_guild_data(user, guild)
