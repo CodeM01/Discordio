@@ -1,9 +1,8 @@
 import asyncio
 
-from bot.json import json_creator as Creator
-from bot.entities.channel.channel_class import Channel
-from bot.entities.guild import load_guild
-
+from RawDiscordBot.json import JsonCreator as Creator
+from RawDiscordBot.entities.channel.channel_class import Channel
+from RawDiscordBot.entities.guild import loading_guild
 
 class message:
 
@@ -11,7 +10,7 @@ class message:
         self.author_id = message_dict["d"]["author"]["id"]
         self.content = message_dict["d"]["content"]
         self.guild_id = message_dict["d"]["guild_id"]
-        self.channel = Channel(user, self.guild_id, message_dict["d"]["channel_id"] )
+        self.channel = Channel(user, self.guild_id, message_dict["d"]["channel_id"])
 
 
 async def heartbeat(user):
@@ -26,8 +25,8 @@ async def heartbeat(user):
                     user.states["op_code_11"] = False
                     attempts = 1
 
-                await user.ws.send(await Creator.create_heartbeat(user.s))
-                await asyncio.sleep(user.heartbeat_interval)
+                await user.ws.send(await Creator.create_heartbeat(user.gateway_data["s"]))
+                await asyncio.sleep(user.gateway_data["heartbeat_interval"])
             else:
                 await user.ws.close()
 
@@ -45,14 +44,17 @@ async def message_create(user, obj):
 async def ready(user, obj):
     # Load guilds
     guilds = obj["d"]["guilds"]
-    await load_guild.load_guilds(user, guilds)
+    await loading_guild.load_guilds(user, guilds)
+
+    print(obj, user)
 
     # Load User Data
-    user.user = obj["d"]["user"]
+    user.bot_data["user"] = obj["d"]["user"]
 
 
 async def guild_create(user, obj):
     guild = obj["d"]
 
-    await load_guild.load_guilds(user, [guild])
-    await load_guild.load_guild_data(user, guild)
+    await loading_guild.load_guilds(user, [guild])
+    await loading_guild.load_guild_data(user, guild)
+
