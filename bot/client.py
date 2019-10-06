@@ -2,20 +2,16 @@ import websockets
 import json
 import asyncio
 
-from bot.json import json_creator as Creator
-from bot import events
+from RawDiscordBot.json import JsonCreator as Creator
+from RawDiscordBot import Events
 
 
 class Client:
     gateway_link = "wss://gateway.discord.gg/"
 
     def __init__(self, bot_token):
-        
         self.states = {"initiated": False, "op_code_11": False, "op_code_10": False}
         self.gateway_data = {"s": None, "session_id": None, "heartbeat_interval": None}
-        self.event_functions = {"READY": Events.ready, "MESSAGE_CREATE": Events.message_create,
-                                "GUILD_CREATE": Events.guild_create}
-        self.op_code_event_functions = {10: self.op_10, 11: self.op_11}
         self.bot_data = {"token": bot_token}
         self.functions = {}
         self.loaded_dictionary = {}
@@ -40,46 +36,44 @@ class Client:
                     self.states["op_code_10"] = False
                     self.states["op_code_11"] = False
                     break
-                    
-                input_event = self.loaded_dictionary["t"]
-                input_op = self.loaded_dictionary["op"]
-                self.loaded_dictionary = json.loads(response)
-                self.gateway_data["s"] = self.loaded_dictionary["s"]
+
+                # The loaded_dictionary is the json response loaded into a python dictionary
+                
+                loaded_dictionary = json.loads(response)
+                event = loaded_dictionary["t"]
+                op = loaded_dictionary["op"]
+                self.gateway_data["s"] = loaded_dictionary["s"]
 
                 print(response)
 
-                if input_event and input_event in self.event_functions:
-                    for event in self.event_functions.keys():
-                        if event == input_event:
-                            await self.event_functions[input_event](self)
+                if op == 10:
+                    self.states["op_code_10"] = True
+                    self.gateway_data["heartbeat_interval"] = loaded_dictionary["d"]["heartbeat_interval"] / 1000
+                    self.add_task(Events.heartbeat(self))
+                elif op == 11:
+                    if not self.states["initiated"]:
+                        self.states["initiated"] = True
+                        identify = await Creator.create_identify(self)
+                        await asyncio.sleep(1)
+                        await self.ws.send(identify)
 
-                elif input_op:
-                    for op in self.op_code_event_functions.keys():
-                        if op == input_op:
-                            await self.op_code_event_functions[op]()
+                    self.states["op_code_11"] = True
+
+                if event == "READY":
+                    self.add_task(Events.ready(self, loaded_dictionary))
+                elif event == "MESSAGE_CREATE":
+                    self.add_task(Events.message_create(self, loaded_dictionary))
+                elif event == "GUILD_CREATE":
+                    self.add_task(Events.guild_create(self, loaded_dictionary))
 
     @staticmethod
     def add_task(task):
         asyncio.get_event_loop().create_task(task)
 
-    async def op_10(self):
-        self.states["op_code_10"] = True
-        self.gateway_data["heartbeat_interval"] = self.loaded_dictionary["d"]["heartbeat_interval"] / 1000
-        self.add_task(Events.heartbeat(self))
-
-    async def op_11(self):
-        if not self.states["initiated"]:
-            self.states["initiated"] = True
-            identify = await Creator.create_identify(self)
-            await asyncio.sleep(1)
-            await self.ws.send(identify)
-        self.states["op_code_11"] = True
-
-
     def async_handler(self, function):
         current_functions = ["message_received"]
 
-        # Checking to see if the function that was inputted is a built-in function
+        # Checking to see if the function that was inputted is a valid event function
 
         if function.__name__ in current_functions:
             if not self.functions.get("message_received"):
