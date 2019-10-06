@@ -1,6 +1,6 @@
 import asyncio
 
-from bot.json import json_creator as Creator
+from bot.json import JsonCreator as Creator
 from bot.entities.channel.channel_class import Channel
 from bot.entities.guild import loading_guild
 
@@ -32,29 +32,28 @@ async def heartbeat(user):
 
 
 # Separate functions for each event (for organisation)
-async def message_create(user, obj):
+async def message_create(user):
 
-    message_obj = message(user, obj)
+    message_obj = message(user, user.loaded_dictionary)
 
     if user.functions.get("message_received"):
         function = user.functions["message_received"]
         await function(message_obj)
 
 
-async def ready(user, obj):
+async def ready(user):
     # Load guilds
-    guilds = obj["d"]["guilds"]
+    guilds = user.loaded_dictionary["d"]["guilds"]
     await loading_guild.load_guilds(user, guilds)
 
-    print(obj, user)
+    print(user.loaded_dictionary, user)
 
     # Load User Data
-    user.bot_data["user"] = obj["d"]["user"]
+    user.bot_data["user"] = user.loaded_dictionary["d"]["user"]
 
 
-async def guild_create(user, obj):
-    guild = obj["d"]
+async def guild_create(user):
+    guild = user.loaded_dictionary["d"]
 
     await loading_guild.load_guilds(user, [guild])
     await loading_guild.load_guild_data(user, guild)
-
