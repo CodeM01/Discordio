@@ -83,7 +83,7 @@ class Client:
     def async_handler(self, function):
         current_functions = ["message_received"]
 
-        # Checking to see if the function that was inputted is a valid event function
+        # Checking to see if the function that was inputted is a built-in function
 
         if function.__name__ in current_functions:
             if not self.functions.get("message_received"):
