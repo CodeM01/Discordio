@@ -10,10 +10,6 @@ class Client:
     gateway_link = "wss://gateway.discord.gg/"
 
     def __init__(self, bot_token):
-        """
-        States for telling if the ws is still open, for checking to see if a heartbeat has been received
-        
-        """
         
         self.states = {"initiated": False, "op_code_11": False, "op_code_10": False}
         self.gateway_data = {"s": None, "session_id": None, "heartbeat_interval": None}
