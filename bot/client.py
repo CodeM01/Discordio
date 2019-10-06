@@ -12,17 +12,15 @@ class Client:
     def __init__(self, bot_token):
         self.states = {"initiated": False, "op_code_11": False, "op_code_10": False}
         self.gateway_data = {"s": None, "session_id": None, "heartbeat_interval": None}
+        self.events = {"READY": Events.ready, "MESSAGE_CREATE": Events.message_create,
+                       "GUILD_CREATE": Events.guild_create}
         self.bot_data = {"token": bot_token}
-        self.functions = dict ()
+        self.functions = {}
 
+        # WebSocket
         self.ws = None
+        # Guilds bot is in
         self.guilds = {}
-
-    """ 
-    Run the client seperately so that all of the in-built functions aren't blocked
-    by the client; we need to get all of the in-built functions before we start heartbeating
-    and carrying out all of the other tasks as the client takes the main thread.
-    """
 
     def run(self):
         task = asyncio.get_event_loop().create_task(self.web_socket())
@@ -46,25 +44,25 @@ class Client:
 
                 print(response)
 
-                if op == 10:
-                    self.states["op_code_10"] = True
-                    self.gateway_data["heartbeat_interval"] = loaded_dictionary["d"]["heartbeat_interval"] / 1000
-                    self.add_task(Events.heartbeat(self))
+                input_event = loaded_dictionary["t"]
 
-                elif op == 11 and self.states["op_code_10"]:
-                    if not self.states["initiated"]:
-                        self.states["initiated"] = True
-                        identify = await Creator.create_identify(self)
-                        await asyncio.sleep(1)
-                        await self.ws.send(identify)
-                    self.states["op_code_11"] = True
+                if input_event:
+                    for event in self.events:
+                        if event == input_event:
+                            await self.events[input_event](self, loaded_dictionary)
+                else:
+                    if op == 10:
+                        self.states["op_code_10"] = True
+                        self.gateway_data["heartbeat_interval"] = loaded_dictionary["d"]["heartbeat_interval"] / 1000
+                        self.add_task(Events.heartbeat(self))
 
-                if loaded_dictionary["t"] == "READY":
-                    self.add_task(Events.ready(self, loaded_dictionary))
-                elif loaded_dictionary["t"] == "MESSAGE_CREATE":
-                    self.add_task(Events.message_create(self, loaded_dictionary))
-                elif loaded_dictionary["t"] == "GUILD_CREATE":
-                    self.add_task(Events.guild_create(self, loaded_dictionary))
+                    elif op == 11 and self.states["op_code_10"]:
+                        if not self.states["initiated"]:
+                            self.states["initiated"] = True
+                            identify = await Creator.create_identify(self)
+                            await asyncio.sleep(1)
+                            await self.ws.send(identify)
+                        self.states["op_code_11"] = True
 
     @staticmethod
     def add_task(task):
