@@ -2,8 +2,8 @@ import websockets
 import json
 import asyncio
 
-from RawDiscordBot.json import JsonCreator as Creator
-from RawDiscordBot import Events
+from bot.json import json_creator as Creator
+from bot import events
 
 
 class Client:
