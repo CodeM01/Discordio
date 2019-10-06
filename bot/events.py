@@ -32,28 +32,26 @@ async def heartbeat(user):
 
 
 # Separate functions for each event (for organisation)
-async def message_create(user):
+async def message_create(user, loaded_dictionary):
 
-    message_obj = message(user, user.loaded_dictionary)
+    message_obj = message(user, loaded_dictionary)
 
     if user.functions.get("message_received"):
         function = user.functions["message_received"]
         await function(message_obj)
 
 
-async def ready(user):
+async def ready(user, loaded_dictionary):
     # Load guilds
-    guilds = user.loaded_dictionary["d"]["guilds"]
+    guilds = loaded_dictionary["d"]["guilds"]
     await loading_guild.load_guilds(user, guilds)
 
-    print(user.loaded_dictionary, user)
-
     # Load User Data
-    user.bot_data["user"] = user.loaded_dictionary["d"]["user"]
+    user.bot_data["user"] = loaded_dictionary["d"]["user"]
 
 
-async def guild_create(user):
-    guild = user.loaded_dictionary["d"]
+async def guild_create(user, loaded_dictionary):
+    guild = loaded_dictionary["d"]
 
     await loading_guild.load_guilds(user, [guild])
     await loading_guild.load_guild_data(user, guild)
