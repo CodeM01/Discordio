@@ -1,7 +1,7 @@
 import json
 from platform import system
 
-from RawDiscordBot.json import GatewayDictionaryTemplates as templates
+from bot.json import gateway_dictionary_templates as templates
 
 
 async def create_heartbeat(d):
