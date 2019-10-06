@@ -39,10 +39,10 @@ class Client:
                     self.states["op_code_10"] = False
                     self.states["op_code_11"] = False
                     break
-
-                self.loaded_dictionary = json.loads(response)
+                    
                 input_event = self.loaded_dictionary["t"]
                 input_op = self.loaded_dictionary["op"]
+                self.loaded_dictionary = json.loads(response)
                 self.gateway_data["s"] = self.loaded_dictionary["s"]
 
                 print(response)
