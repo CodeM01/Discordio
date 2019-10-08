@@ -2,7 +2,7 @@ import asyncio
 
 from bot.json import json_creator as Creator
 from bot.entities.channel.channel_class import Channel
-from bot.entities.guild import guild_class
+from bot.entities.guild.guild_class import Guild
 
 class message:
 
@@ -10,7 +10,7 @@ class message:
         self.author_id = message_dict["d"]["author"]["id"]
         self.content = message_dict["d"]["content"]
         self.guild_id = message_dict["d"]["guild_id"]
-        self.guild = guild_class.Guild(user, self.guild_id)
+        self.guild = Guild(user, self.guild_id)
         self.channel = Channel(user, self.guild_id)
 
 
