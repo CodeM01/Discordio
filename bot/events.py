@@ -11,7 +11,7 @@ class message:
         self.content = message_dict["d"]["content"]
         self.guild_id = message_dict["d"]["guild_id"]
         self.guild = guild_class.Guild(user, self.guild_id)
-        self.channel = Channel(user, self.guild_id, message_dict["d"]["channel_id"])
+        self.channel = Channel(user, self.guild_id)
 
 
 async def heartbeat(user):
