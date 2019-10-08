@@ -2,7 +2,7 @@
 
 A discord bot library, whether you’re making your own !wumpus commands or looking to Log In With Discord, we’ve got you covered.
 
-Below is an example of code which will print out the contents of a message when a message is sent...just a quick snapshot of our libray (it's work in progress)
+What will the code look like?...
 
 ```python
 
@@ -10,11 +10,11 @@ from bot import client as Cli
 
 Client = Cli.Client("bot_token_here")
 
-# This code will print the id of the author of the message
+# This code will return a list of dictionaries, each one representing a channel
 
 @Client.async_handler                               
 async def message_received(message):                              
-    print(message.author)                              
+    print(message.guild.get_channels())                           
 
 
 Client.run()                 
