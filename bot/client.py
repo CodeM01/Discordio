@@ -18,8 +18,6 @@ class Client:
 
         # WebSocket
         self.ws = None
-        # Guilds bot is in
-        self.guilds = {}
 
     def run(self):
         task = asyncio.get_event_loop().create_task(self.web_socket())
@@ -35,10 +33,11 @@ class Client:
                     print(e)
                     self.states["op_code_10"] = False
                     self.states["op_code_11"] = False
+                    # I will deal with the different errors and stuff at a later date
                     break
 
                 # The loaded_dictionary is the json response loaded into a python dictionary
-                
+
                 loaded_dictionary = json.loads(response)
                 event = loaded_dictionary["t"]
                 op = loaded_dictionary["op"]
