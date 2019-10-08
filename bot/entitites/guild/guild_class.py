@@ -1,4 +1,4 @@
-from RawDiscordBot.api.http_request_class import http_request
+from bot.http_request import http_request
 
 class Guild:
 
