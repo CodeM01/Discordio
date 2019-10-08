@@ -1,8 +1,8 @@
 import asyncio
 
-from bot.json import JsonCreator as Creator
+from bot.json import json_creator as Creator
 from bot.entities.channel.channel_class import Channel
-from bot.entities.guild import loading_guild
+from bot.entities.guild import guild_class
 
 class message:
 
@@ -10,6 +10,7 @@ class message:
         self.author_id = message_dict["d"]["author"]["id"]
         self.content = message_dict["d"]["content"]
         self.guild_id = message_dict["d"]["guild_id"]
+        self.guild = guild_class.Guild(user, self.guild_id)
         self.channel = Channel(user, self.guild_id, message_dict["d"]["channel_id"])
 
 
@@ -42,16 +43,9 @@ async def message_create(user, loaded_dictionary):
 
 
 async def ready(user, loaded_dictionary):
-    # Load guilds
-    guilds = loaded_dictionary["d"]["guilds"]
-    await loading_guild.load_guilds(user, guilds)
-
     # Load User Data
     user.bot_data["user"] = loaded_dictionary["d"]["user"]
 
 
 async def guild_create(user, loaded_dictionary):
-    guild = loaded_dictionary["d"]
-
-    await loading_guild.load_guilds(user, [guild])
-    await loading_guild.load_guild_data(user, guild)
+    pass
