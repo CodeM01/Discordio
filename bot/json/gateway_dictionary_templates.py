@@ -20,6 +20,10 @@ identify = {
 }
 
 new_message = {
-    "content": "Hello, World!",
-    "tts": False,
+    "id": None,
+    "type": None,
+    "position": None,
+    "permission_overwrites": None,
+    "name": None,
+    "topic": None,
 }
