@@ -2,26 +2,30 @@ import websockets
 import json
 import asyncio
 
-from bot.json import json_creator as Creator
-from bot import events
+from json_management import json_creator as creator
+from asynchronous_http import aiohttp_session
+import events
 
 
 class Client:
     gateway_link = "wss://gateway.discord.gg/"
 
     def __init__(self, bot_token):
-        self.states = {"initiated": False, "op_code_11": False, "op_code_10": False}
-        self.gateway_data = {"s": None, "session_id": None, "heartbeat_interval": None}
+        self.gateway_data = {"s": None, "session_id": None, "heartbeat_interval": None,
+                            "operating": False, "heartbeat_ack": False, "hello": False}
+        self.gateway_events = {"READY": events.ready, "MESSAGE_CREATE": events.message_create,
+                              "GUILD_CREATE": events.guild_create}
         self.bot_data = {"token": bot_token}
         self.functions = {}
-        self.loaded_dictionary = {}
+        self.loop = asyncio.get_event_loop()
+        self.aiohttp_client_session = aiohttp_session(self)
 
-        # WebSocket
+
+        """"WebSocket"""
         self.ws = None
 
     def run(self):
-        task = asyncio.get_event_loop().create_task(self.web_socket())
-        asyncio.get_event_loop().run_until_complete(task)
+        self.loop.run_until_complete(self.web_socket())
 
     async def web_socket(self):
         async with websockets.connect(Client.gateway_link) as ws:
@@ -30,50 +34,44 @@ class Client:
                 try:
                     response = await ws.recv()
                 except websockets.ConnectionClosed as e:
-                    print(e)
-                    self.states["op_code_10"] = False
-                    self.states["op_code_11"] = False
-                    # I will deal with the different errors and stuff at a later date
+                    self.gateway_data["hello"] = False
+                    self.gateway_data["heartbeat_ack"] = False
                     break
 
-                # The loaded_dictionary is the json response loaded into a python dictionary
-
                 loaded_dictionary = json.loads(response)
-                event = loaded_dictionary["t"]
                 op = loaded_dictionary["op"]
+                self.loaded_dictionary = loaded_dictionary
                 self.gateway_data["s"] = loaded_dictionary["s"]
 
-                print(response)
+                print(response.encode("utf-8"))
 
                 if op == 10:
-                    self.states["op_code_10"] = True
+                    self.gateway_data["hello"] = True
                     self.gateway_data["heartbeat_interval"] = loaded_dictionary["d"]["heartbeat_interval"] / 1000
-                    self.add_task(Events.heartbeat(self))
+                    self.add_task(events.heartbeat(self))
+
                 elif op == 11:
-                    if not self.states["initiated"]:
-                        self.states["initiated"] = True
-                        identify = await Creator.create_identify(self)
-                        await asyncio.sleep(1)
+                    if not self.gateway_data["operating"]:
+                        self.gateway_data["operating"] = True
+                        identify = await creator.create_identify(self)
                         await self.ws.send(identify)
+                    self.gateway_data["heartbeat_ack"] = True
 
-                    self.states["op_code_11"] = True
+                event = self.gateway_events.get(loaded_dictionary["t"])
 
-                if event == "READY":
-                    self.add_task(Events.ready(self, loaded_dictionary))
-                elif event == "MESSAGE_CREATE":
-                    self.add_task(Events.message_create(self, loaded_dictionary))
-                elif event == "GUILD_CREATE":
-                    self.add_task(Events.guild_create(self, loaded_dictionary))
+                if self.gateway_events.get(loaded_dictionary["t"]):
+                    self.add_task(event(self, loaded_dictionary))
 
-    @staticmethod
-    def add_task(task):
-        asyncio.get_event_loop().create_task(task)
+    def add_task(self, task):
+        self.loop.create_task(task)
+
 
     def async_handler(self, function):
-        current_functions = ["message_received"]
 
-        # Checking to see if the function that was inputted is a valid event function
-
-        if function.__name__ in current_functions:
-            if not self.functions.get("message_received"):
-                self.functions["message_received"] = function
+        if function.__name__.upper() in self.gateway_events:
+            if not self.functions.get(function.__name__):
+                self.functions[function.__name__] = function
+            else:
+                raise("Two Or More Of The Same Built-in Function, Is Not Permitted")
+        else:
+            raise("Unrecognised Built-in Function")
