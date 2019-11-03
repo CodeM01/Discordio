@@ -1,7 +1,7 @@
 import json
 from platform import system
 
-from bot.json import gateway_dictionary_templates as templates
+from json_management import gateway_dictionary_templates as templates
 
 
 async def create_heartbeat(d):
@@ -14,7 +14,7 @@ async def create_identify(user):
     template_layout = templates.basic_layout
     template_d = templates.identify
 
-    # Putting identify structure into basic structure
+    # Putting identify structure into identify load
     template_layout["d"] = template_d
 
     # Changing data
