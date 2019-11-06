@@ -35,6 +35,11 @@ async def heartbeat(user):
 
 async def message_create(user, loaded_dictionary):
     message_obj = message(user, loaded_dictionary)
+    channel_data = await message_obj.channel.get_channel_data()
+
+    message_obj.channel.topic = channel_data["topic"]
+    message_obj.channel.name = channel_data["name"]
+
 
     if user.functions.get("message_create"):
         function = user.functions["message_create"]
