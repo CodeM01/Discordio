@@ -5,7 +5,4 @@ class Guild:
         self.user = user
 
     def get_channels(self):
-        #request = http_request("guilds/" + self.guild_id + "/channels", "GET",
-                               #self.user.bot_data["token"])
-        #return request
         pass
