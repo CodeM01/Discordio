@@ -1,8 +1,8 @@
 import asyncio
 
 from json_management import json_creator as creator
-from entities.channel.channel_class import Channel
-from entities.guild.guild_class import Guild
+from channel_class import Channel
+from guild_class import Guild
 
 class message:
 
