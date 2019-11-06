@@ -14,8 +14,8 @@ identify = {
     "token": "my_token",
     "properties": {
         "$os": "linux",
-        "$browser": "DiscordPyIo",
-        "$device": "DiscordPyIo"
+        "$browser": "Discordio",
+        "$device": "Discordio"
     }
 }
 
