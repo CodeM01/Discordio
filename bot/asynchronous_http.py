@@ -1,7 +1,6 @@
-import aiohttp
+mport aiohttp
 import asyncio
 import json
-import client
 
 class aiohttp_session():
 
@@ -12,8 +11,8 @@ class aiohttp_session():
     async def create_session(self):
         self.session = aiohttp.ClientSession()
         self.requests = {"GET": self.get}
-        self.request_error_codes = {"404: Not Found": "invalid end_point",
-                                    "401: Unauthorized": "ivalid authorization header"}
+        self.request_error_codes = {"404: Not Found": "invalid url - invalid end_point",
+                                    "401: Unauthorized": "invalid authorization header"}
 
     async def http_request(self, load):
 
@@ -42,4 +41,3 @@ class aiohttp_session():
                         raise Exception(self.request_error_codes.get(message))
 
             return response
-
