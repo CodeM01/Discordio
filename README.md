@@ -8,7 +8,7 @@ What will the code look like?...
 
 from client import Client
 
-bot_client = Client("")
+bot_client = Client("my_token")
 
 @bot_client.async_handler
 async def message_create(message):
