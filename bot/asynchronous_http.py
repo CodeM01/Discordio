@@ -1,6 +1,7 @@
 import aiohttp
 import asyncio
 import json
+import client
 
 class aiohttp_session():
 
@@ -22,10 +23,7 @@ class aiohttp_session():
         if not self.requests.get(load.get("request_type")):
             raise KeyError("invalid request_type")
 
-        response = await self.requests[load.get("request_type")](load)
-        return response
-
-
+        return await self.requests[load.get("request_type")](load)
 
     async def get(self, load):
         url = "https://discordapp.com/api/v6/" + load.get("end_point")
@@ -44,3 +42,4 @@ class aiohttp_session():
                         raise Exception(self.request_error_codes.get(message))
 
             return response
+
