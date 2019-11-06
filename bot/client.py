@@ -20,7 +20,6 @@ class Client:
         self.loop = asyncio.get_event_loop()
         self.aiohttp_client_session = aiohttp_session(self)
 
-
         """"WebSocket"""
         self.ws = None
 
@@ -75,3 +74,4 @@ class Client:
                 raise("Two Or More Of The Same Built-in Function, Is Not Permitted")
         else:
             raise("Unrecognised Built-in Function")
+
