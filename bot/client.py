@@ -2,7 +2,7 @@ import websockets
 import json
 import asyncio
 
-from json_management import json_creator as creator
+from json_management import json_creator
 from asynchronous_http import aiohttp_session
 import events
 
@@ -19,6 +19,7 @@ class Client:
         self.functions = {}
         self.loop = asyncio.get_event_loop()
         self.aiohttp_client_session = aiohttp_session(self)
+
 
         """"WebSocket"""
         self.ws = None
@@ -52,7 +53,7 @@ class Client:
                 elif op == 11:
                     if not self.gateway_data["operating"]:
                         self.gateway_data["operating"] = True
-                        identify = await creator.create_identify(self)
+                        identify = await json_creator.create_identify(self)
                         await self.ws.send(identify)
                     self.gateway_data["heartbeat_ack"] = True
 
@@ -74,4 +75,3 @@ class Client:
                 raise("Two Or More Of The Same Built-in Function, Is Not Permitted")
         else:
             raise("Unrecognised Built-in Function")
-
