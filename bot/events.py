@@ -1,6 +1,6 @@
 import asyncio
 
-from json_management import json_creator as creator
+from json_management import json_creator
 from channel_class import Channel
 from guild_class import Guild
 
@@ -27,7 +27,7 @@ async def heartbeat(user):
                     user.gateway_data["heartbeat_ack"] = False
                     attempts = 1
 
-                await user.ws.send(await creator.create_heartbeat(user.gateway_data["s"]))
+                await user.ws.send(await json_creator.create_heartbeat(user.gateway_data["s"]))
                 await asyncio.sleep(user.gateway_data["heartbeat_interval"])
             else:
                 await user.ws.close()
@@ -52,4 +52,5 @@ async def ready(user, loaded_dictionary):
 
 async def guild_create(user, loaded_dictionary):
     pass
+
 
