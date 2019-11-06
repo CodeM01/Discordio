@@ -6,16 +6,17 @@ What will the code look like?...
 
 ```python
 
-from bot import client as Cli
+from client import Client
 
-Client = Cli.Client("bot_token_here")
+bot_client = Client("")
 
-# This code will return a list of dictionaries, each one representing a channel
+@bot_client.async_handler
+async def message_create(message):
+    if message.content == "hi":
+        print(await message.guild.get_channels())
+    else:
+        print(message.channel.name)
 
-@Client.async_handler                               
-async def message_received(message):                              
-    print(message.guild.get_channels())                           
-
-
-Client.run()                 
+bot_client.run()
+              
 ```
