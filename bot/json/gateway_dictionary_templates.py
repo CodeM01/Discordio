@@ -19,11 +19,18 @@ identify = {
     }
 }
 
+http_load = {
+   "request_type": "",
+   "end_point": "",
+   "headers/data": ""
+}
+
+
 new_message = {
-    "id": None,
-    "type": None,
-    "position": None,
-    "permission_overwrites": None,
-    "name": None,
-    "topic": None,
+  "content": "Hello, World!",
+  "tts": False,
+  "embed": {
+    "title": "",
+    "description": ""
+  }
 }
