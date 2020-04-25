@@ -1,4 +1,4 @@
-from json_management import gateway_dictionary_templates
+import json_and_dictionary_constructor
 
 class Guild:
 
@@ -7,11 +7,6 @@ class Guild:
         self.user = user
 
     async def get_channels(self):
-        http_template = gateway_dictionary_templates.http_load
+        http_template = await json_and_dictionary_constructor.create_http_request("GET", "/guilds/" + self.guild_id + "/channels", {"Authorization": "Bot " + self.user.bot_data["token"]})
 
-        http_template["request_type"] = "GET"
-        http_template["end_point"] = "/guilds/" + self.guild_id + "/channels"
-        http_template["headers/data"] = {"Authorization": "Bot " + self.user.bot_data["token"]}
-
-        response = await self.user.aiohttp_client_session.http_request(http_template)
-        return response
+        return await self.user.aiohttp_client_session.http_request(http_template)
