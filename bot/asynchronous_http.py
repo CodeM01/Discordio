@@ -27,6 +27,11 @@ class aiohttp_session():
         return await self.requests[load.get("request_type")](load)
 
     async def get(self, load):
+
+        """
+        GET request to the Discord API
+        """
+
         url = "https://discordapp.com/api/v6/" + load.get("end_point")
 
         async with self.session.get(url, headers=load.get("headers/data")) as session:
@@ -40,16 +45,14 @@ class aiohttp_session():
 
     async def post(self, load):
 
-        """In Progress"""
-        
+        """
+        POST request to the Discord API
+        """
+
         url = "https://discordapp.com/api/v6/" + load.get("end_point")
+        print(url)
 
-        try:
-            json_dump = json.dumps(load.get("headers/data"))
-        except ValueError:
-            raise ValueError("The Load Could Not Be Dumped As Json")
-
-        async with self.session.post(url=url, json=json_dump) as session:
+        async with self.session.post(url=url, data=load) as session:
             response = await session.text()
             loaded_response = await self.load_response(response)
             error = await self.check_for_error(loaded_response)
